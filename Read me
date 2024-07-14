@@ -1,0 +1,4 @@
+// ! fetch("http://localhost:3000/"): This initiates a network request to the specified URL (http://localhost:3000/).
+// .then(res => res.json()): Once the request is complete, the response (res) is converted to JSON format.
+// .then(data => { console.log(data); }): After converting to JSON, the data is logged to the console.
+// .catch(error => { console.error("Error fetching data:", error); }): If there's an error during the fetch operation, it is caught and logged to the console.
