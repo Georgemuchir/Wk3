@@ -1,3 +1,10 @@
 {
-    
+    "id": "1",
+    "Title": "title 1",
+    "Runtime": "runtime 1",
+    "Capacity": "capacity 1",
+    "Show time ": "time 1",
+    "Tickets-sold": "sold 1",
+    "Description": "description 1",
+    "Poster": "poster 1"
 }
