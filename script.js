@@ -1,77 +1,76 @@
-document.addEventListener('DOMContentLoaded', () => {
-    fetch("http://localhost:3000/films")
-        .then(res => res.json())
-        .then(films => {
-            const filmsList = document.getElementById('films');
-            filmsList.innerHTML = '';
+document.addEventListener("DOMContentLoaded", () => {
+	const apiUrl = "https://db-json-pi.vercel.app/films";
 
-            films.forEach(film => {
-                const li = document.createElement('li');
-                li.className = 'film';
-                li.textContent = film.title;
-                if (film.tickets_sold >= film.capacity) {
-                    li.classList.add('sold-out');
-                }
-                li.addEventListener('click', () => {
-                    fetchMovieDetails(film.id);
-                });
+	fetch(apiUrl)
+		.then((res) => res.json())
+		.then((movies) => {
+			const title = document.querySelector(".lists");
+			movies.map((movie) => {
+				const list = document.createElement("li");
+				list.textContent = movie.title;
+				list.addEventListener("click", () => MovieDesc(movie.id));
+				title.appendChild(list);
+				const description = document.querySelector(".description");
 
-                filmsList.appendChild(li);
-            });
+				const movieList = document.createElement("h3");
+				movieList.textContent = movie.title;
+				description.appendChild(movieList);
 
-            // Load details for the first movie initially
-            if (films.length > 0) {
-                fetchMovieDetails(films[0].id);
-            }
-        })
-        .catch(error => console.error('Error fetching films:', error));
+				const moviedescription = document.createElement("p");
+				moviedescription.textContent = movie.description;
+				description.appendChild(moviedescription);
 
-    // Function to fetch and display movie details
-    function fetchMovieDetails(id) {
-        fetch(`http://localhost:3000/films/${id}`)
-            .then(res => res.json())
-            .then(film => {
-                const main = document.getElementById('movie-details');
-                main.innerHTML = '';
+				const movieShowtime = document.createElement("h2");
+				movieShowtime.textContent = `ShowTime :${movie.showtime}`;
+				description.appendChild(movieShowtime);
 
-                const title = document.createElement('h1');
-                title.textContent = film.title;
-                main.appendChild(title);
+				const movieRuntime = document.createElement("h2");
+				movieRuntime.textContent = `Runtime: ${movie.runtime} `;
+				description.appendChild(movieRuntime);
 
-                const description = document.createElement('p');
-                description.textContent = film.description;
-                main.appendChild(description);
+				const movieNoOfTickets = document.createElement("h3");
+				movieNoOfTickets.textContent = `Number Of Movie Tickets Sold: ${movie.tickets_sold}`;
+				description.appendChild(movieNoOfTickets);
 
-                const runtime = document.createElement('p');
-                runtime.textContent = `Runtime: ${film.runtime} minutes`;
-                main.appendChild(runtime);
+				const movieCapacity = document.createElement("h3");
+				movieCapacity.textContent = `Capacity:${movie.capacity}`;
+				description.appendChild(movieCapacity);
 
-                const showtime = document.createElement('p');
-                showtime.textContent = `Showtime: ${film.showtime}`;
-                main.appendChild(showtime);
+				const moviePoster = document.createElement("img");
+				moviePoster.src = movie.poster;
+				description.appendChild(moviePoster);
+			});
+		});
+	runtime;
+	function MovieDesc(movieId) {
+		const movieUrl = `${apiUrl}/${movieId}`;
+		fetch(movieUrl)
+			.then((res) => res.json())
+			.then((movie) => {
+				const description = document.querySelector(".description");
 
-                const availableTickets = film.capacity - film.tickets_sold;
-                const tickets = document.createElement('p');
-                tickets.textContent = `Available Tickets: ${availableTickets}`;
-                main.appendChild(tickets);
+				description.innerHTML = `
+					<h1>${movie.title}</h1>
+					<div>
+						<p>${movie.description}</p>
+					</div>
+					<h1>Movie Starts at: ${movie.showtime}</h1>
+					<h2 id="tickets-sold">Tickets Sold: ${movie.tickets_sold}</h2>
+					<img src="${movie.poster}" alt="${movie.title}">
+					<button id="buy-ticket">Buy Ticket</button>
+				`;
 
-                const poster = document.createElement('img');
-                poster.src = film.poster;
-                poster.alt = `${film.title} Poster`;
-                main.appendChild(poster);
-
-                const buyButton = document.createElement('button');
-                buyButton.textContent = availableTickets > 0 ? 'Buy Ticket' : 'Sold Out';
-                buyButton.disabled = availableTickets === 0;
-                buyButton.addEventListener('click', () => {
-                    if (availableTickets > 0) {
-                        tickets.textContent = `Available Tickets: ${--availableTickets}`;
-                        buyButton.textContent = availableTickets > 0 ? 'Buy Ticket' : 'Sold Out';
-                        buyButton.disabled = availableTickets === 0;
-                    }
-                });
-                main.appendChild(buyButton);
-            })
-            .catch(error => console.error(`Error fetching movie details for ID ${id}:`, error));
-    }
+				// Add event listener to the button
+				const button = document.querySelector("#buy-ticket");
+				button.addEventListener("click", () => {
+					if (movie.tickets_sold > 0) {
+						movie.tickets_sold--;
+						const ticketsSold = document.querySelector("#tickets-sold");
+						ticketsSold.textContent = `Tickets Sold: ${movie.tickets_sold}`;
+					} else {
+						alert("No more tickets available!");
+					}
+				});
+			});
+	}
 });
